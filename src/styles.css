@@ -1,0 +1,407 @@
+/* vt323 is a digitization of the dec vt320 terminal's bitmap glyphs, which is
+   the same lineage as the fixedsys-style font the game uses. self-hosted so
+   the app never makes a network request. */
+@font-face {
+  font-family: "VT323";
+  src: url("/fonts/vt323.woff2") format("woff2");
+  font-display: block;
+}
+
+:root {
+  /* phosphor green tuned against the reference shots: brighter than #1aff80,
+     slightly less blue than #2bff7f */
+  --phosphor: #23ff7e;
+  --phosphor-dim: #14a04f;
+  --screen-bg: #0b1a10;
+  --screen-deep: #071009;
+  --bezel: #2a2622;
+  --bezel-dark: #16130f;
+  --glow: 0 0 2px rgba(35, 255, 126, 0.8), 0 0 7px rgba(35, 255, 126, 0.35);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: var(--bezel-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "VT323", "Courier New", monospace;
+}
+
+/* the dark frame around the glass. pure css, no textures */
+#bezel {
+  width: min(100vw, 130vh);
+  height: min(100vh, 0.78 * 100vw);
+  padding: clamp(10px, 3vmin, 34px);
+  background: linear-gradient(160deg, #35302a 0%, var(--bezel) 30%, #1d1a16 100%);
+  border-radius: clamp(8px, 2vmin, 22px);
+  box-shadow:
+    inset 0 2px 6px rgba(255, 255, 255, 0.08),
+    inset 0 -3px 10px rgba(0, 0, 0, 0.6),
+    0 0 60px rgba(0, 0, 0, 0.9);
+}
+
+#screen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: clamp(6px, 1.5vmin, 18px);
+  background: radial-gradient(ellipse at center, var(--screen-bg) 60%, var(--screen-deep) 100%);
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.7);
+  animation: flicker 6s infinite;
+}
+
+#content {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  color: var(--phosphor);
+  text-shadow: var(--glow);
+  font-size: clamp(16px, 2.6vmin, 26px);
+  line-height: 1.25;
+  letter-spacing: 0.12em;
+  scrollbar-width: thin;
+  scrollbar-color: var(--phosphor-dim) transparent;
+}
+
+/* crt overlay layers, stacked above the text, transparent to input */
+.overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.scanlines {
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0px,
+    rgba(0, 0, 0, 0) 2px,
+    rgba(0, 0, 0, 0.22) 3px
+  );
+  mix-blend-mode: multiply;
+}
+
+/* the static reflection on the curved glass, parked upper-right like the game */
+.bloom {
+  background: radial-gradient(
+    ellipse 42% 30% at 76% 16%,
+    rgba(160, 255, 195, 0.13),
+    rgba(160, 255, 195, 0.04) 55%,
+    transparent 75%
+  );
+}
+
+.vignette {
+  background: radial-gradient(ellipse at center, transparent 62%, rgba(0, 0, 0, 0.45) 100%);
+}
+
+@keyframes flicker {
+  0%, 100% { filter: brightness(1); }
+  3% { filter: brightness(1.03); }
+  7% { filter: brightness(0.98); }
+  29% { filter: brightness(1); }
+  31% { filter: brightness(0.97); }
+  33% { filter: brightness(1.02); }
+  71% { filter: brightness(1); }
+  73% { filter: brightness(0.985); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #screen {
+    animation: none;
+  }
+}
+
+/* ---------- shared text bits ---------- */
+
+.screen-pad {
+  padding: clamp(14px, 3vmin, 36px) clamp(16px, 4vmin, 48px);
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.tw-line {
+  white-space: pre-wrap;
+  min-height: 1.25em;
+}
+
+.dim {
+  color: var(--phosphor-dim);
+}
+
+.hrule {
+  border-bottom: 2px solid var(--phosphor);
+  box-shadow: var(--glow);
+  margin: 0.35em 0 0.5em;
+}
+
+.cursor {
+  animation: blink 1s steps(1) infinite;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cursor { animation: none; }
+}
+
+.os-header {
+  text-align: center;
+}
+
+.os-model {
+  text-align: center;
+  margin-top: 0.6em;
+}
+
+.journal-title {
+  margin-top: 0.2em;
+}
+
+.status-line {
+  margin-top: 0.6em;
+  min-height: 1.25em;
+}
+
+/* ---------- menus ---------- */
+
+.menu {
+  margin-top: 0.4em;
+}
+
+.menu-item {
+  cursor: pointer;
+  white-space: pre-wrap;
+  padding: 0.05em 0;
+}
+
+.menu-item .menu-label {
+  padding: 0 0.15em;
+}
+
+.menu-item.selected .menu-label {
+  background: var(--phosphor);
+  color: var(--screen-bg);
+  text-shadow: none;
+}
+
+.confirm {
+  margin-top: 0.6em;
+}
+
+/* ---------- prompts / inputs ---------- */
+
+.prompt-row {
+  margin-top: 0.5em;
+}
+
+.prompt-line {
+  display: flex;
+  align-items: baseline;
+}
+
+.prompt-input,
+.editor-title,
+.editor-body {
+  font: inherit;
+  letter-spacing: inherit;
+  color: var(--phosphor);
+  text-shadow: var(--glow);
+  background: transparent;
+  border: none;
+  outline: none;
+  caret-color: var(--phosphor);
+  width: 100%;
+}
+
+.prompt-input {
+  text-transform: uppercase;
+}
+
+/* ---------- boot ---------- */
+
+.boot .tw-line {
+  letter-spacing: 0.1em;
+}
+
+.tape-error {
+  margin: 0.4em 0 0.2em;
+}
+
+/* ---------- minigame ---------- */
+
+.minigame {
+  font-size: clamp(13px, 2.1vmin, 22px);
+}
+
+.mg-header {
+  min-height: 1.25em;
+}
+
+.mg-attempts {
+  margin: 0.7em 0;
+}
+
+.attempt-block {
+  margin-left: 0.55em;
+}
+
+.mg-body {
+  display: flex;
+  gap: 1.5em;
+  flex: 1;
+  min-height: 0;
+}
+
+.mg-board {
+  display: flex;
+  gap: 1.5em;
+}
+
+.mg-row {
+  white-space: pre;
+}
+
+.mg-addr {
+  margin-right: 0.7em;
+}
+
+.mg-chars .token {
+  cursor: pointer;
+}
+
+.mg-chars .token.selected {
+  background: var(--phosphor);
+  color: var(--screen-bg);
+  text-shadow: none;
+}
+
+.mg-chars .token.removed {
+  cursor: default;
+  color: var(--phosphor-dim);
+}
+
+.mg-log {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-width: 9em;
+  overflow: hidden;
+}
+
+.mg-log-lines div,
+.mg-preview {
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* ---------- locked ---------- */
+
+.locked-screen {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4em;
+  text-align: center;
+}
+
+.locked-count {
+  margin-top: 1.4em;
+  color: var(--phosphor-dim);
+}
+
+/* ---------- entries / editor ---------- */
+
+.entry-list {
+  margin-top: 0.3em;
+}
+
+.entry-body {
+  white-space: pre-wrap;
+  letter-spacing: 0.06em;
+}
+
+.editor {
+  height: 100%;
+}
+
+.editor-top {
+  display: flex;
+  justify-content: space-between;
+}
+
+.save-indicator {
+  color: var(--phosphor-dim);
+}
+
+.editor-title {
+  margin: 0.4em 0;
+}
+
+.editor-body {
+  flex: 1;
+  resize: none;
+  letter-spacing: 0.06em;
+  line-height: 1.35;
+  min-height: 8em;
+}
+
+.editor-back {
+  margin-top: 0.5em;
+}
+
+/* ---------- small screens ---------- */
+
+@media (max-width: 700px) {
+  #bezel {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    border-radius: 0;
+    padding: 8px;
+  }
+
+  #content {
+    font-size: 16px;
+  }
+
+  .minigame {
+    font-size: 11px;
+    letter-spacing: 0.05em;
+  }
+
+  .mg-body {
+    flex-direction: column;
+    gap: 0.8em;
+  }
+
+  .mg-board {
+    gap: 0.8em;
+  }
+
+  .mg-log {
+    justify-content: flex-start;
+    min-height: 7em;
+  }
+
+  .screen-pad {
+    padding: 12px;
+  }
+}

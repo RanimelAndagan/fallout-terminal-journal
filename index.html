@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#0b1a10" />
+    <title>TERMINAL JOURNAL</title>
+  </head>
+  <body>
+    <div id="bezel">
+      <div id="screen">
+        <div id="content"></div>
+        <!-- the crt layers stack over the content but never catch clicks -->
+        <div class="overlay scanlines"></div>
+        <div class="overlay bloom"></div>
+        <div class="overlay vignette"></div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
