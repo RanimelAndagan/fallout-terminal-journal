@@ -1,4 +1,5 @@
 import { session } from "./state";
+import { cancelTyping } from "./typewriter";
 
 export type Cleanup = () => void;
 export type ScreenRenderer = (
@@ -14,6 +15,7 @@ interface Route {
 const routes: Route[] = [];
 let root: HTMLElement;
 let cleanup: Cleanup | null = null;
+let dispatchSeq = 0;
 
 // screens reachable without solving the password minigame
 const PUBLIC = new Set(["/boot", "/check", "/setup", "/unlock", "/locked"]);
@@ -47,6 +49,9 @@ function match(path: string): { render: ScreenRenderer; params: Record<string, s
 }
 
 async function dispatch(): Promise<void> {
+  // screens render asynchronously, so a navigation can land while another is
+  // still rendering. the token lets the stale one detect it lost the root.
+  const token = ++dispatchSeq;
   let path = location.hash.slice(1) || "/boot";
 
   // a reload mid-session always replays boot, then the lock. journals are
@@ -68,9 +73,16 @@ async function dispatch(): Promise<void> {
 
   cleanup?.();
   cleanup = null;
+  cancelTyping();
   root.innerHTML = "";
   root.scrollTop = 0;
   const c = await m.render(root, m.params);
+  if (token !== dispatchSeq) {
+    // a newer navigation owns the root now, so this screen never mounted
+    // for real. tear down its listeners instead of storing a stale cleanup.
+    if (typeof c === "function") c();
+    return;
+  }
   if (typeof c === "function") cleanup = c;
 }
 

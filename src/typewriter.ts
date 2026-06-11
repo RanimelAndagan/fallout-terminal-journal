@@ -28,6 +28,12 @@ window.addEventListener(
   true,
 );
 
+// the router calls this on navigation so a screen left mid-type can't keep
+// swallowing the first keypress on the next screen
+export function cancelTyping(): void {
+  activeSkip?.();
+}
+
 export function textIsInstant(): boolean {
   return (
     session.instantText ||

@@ -60,55 +60,61 @@ export async function entriesScreen(
 
   wrap.appendChild(listEl);
 
+  let rows: HTMLElement[] = [];
+
+  // moving the highlight must not rebuild the dom: replacing the row under
+  // the cursor between mousedown and mouseup eats the click entirely
+  function setSelected(i: number) {
+    if (i === selected) return;
+    rows[selected]?.classList.remove("selected");
+    selected = i;
+    rows[selected]?.classList.add("selected");
+  }
+
   function renderList() {
     listEl.innerHTML = "";
+    rows = [];
     if (filtered.length === 0) {
       listEl.appendChild(
         el("div", "dim", all.length === 0 ? "NO ENTRIES ON RECORD." : "NO MATCHING ENTRIES."),
       );
     }
     filtered.forEach((entry, i) => {
-      const row = el("div", "menu-item" + (i === selected ? " selected" : ""));
+      const row = el("div", "menu-item");
       row.appendChild(el("span", "menu-prefix", "> "));
       row.appendChild(
         el("span", "menu-label", `${fmtDate(entry.createdAt)}  ${entry.title || "(UNTITLED)"}`),
       );
-      row.addEventListener("mouseenter", () => {
-        selected = i;
-        renderList();
-      });
+      row.addEventListener("mouseenter", () => setSelected(i));
       row.addEventListener("click", () => navigate(`/entry/${entry.id}`));
       listEl.appendChild(row);
+      rows.push(row);
     });
-    const back = el("div", "menu-item" + (selected === filtered.length ? " selected" : ""));
+    const back = el("div", "menu-item");
     back.appendChild(el("span", "menu-prefix", "> "));
     back.appendChild(el("span", "menu-label", "Back"));
-    back.addEventListener("mouseenter", () => {
-      selected = filtered.length;
-      renderList();
-    });
+    back.addEventListener("mouseenter", () => setSelected(filtered.length));
     back.addEventListener("click", () => navigate(`/journal/${journal!.id}`));
     listEl.appendChild(back);
+    rows.push(back);
+    rows[selected]?.classList.add("selected");
   }
   renderList();
 
   function onKey(e: KeyboardEvent) {
     const total = filtered.length + 1; // entries plus the back row
     if (e.key === "ArrowUp") {
-      selected = (selected - 1 + total) % total;
-      renderList();
+      setSelected((selected - 1 + total) % total);
       sound.keypress();
       e.preventDefault();
     } else if (e.key === "ArrowDown") {
-      selected = (selected + 1) % total;
-      renderList();
+      setSelected((selected + 1) % total);
       sound.keypress();
       e.preventDefault();
     } else if (e.key === "Enter") {
-      if (e.target === searchInput && filtered.length > 0) {
-        // enter from the search box jumps to the top result
-        navigate(`/entry/${filtered[0]!.id}`);
-      } else if (selected < filtered.length) {
+      // selection starts on the top result, so enter from the search box
+      // still jumps there unless the user arrowed somewhere else
+      if (selected < filtered.length) {
         navigate(`/entry/${filtered[selected]!.id}`);
       } else {
         navigate(`/journal/${journal!.id}`);
