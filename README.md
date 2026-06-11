@@ -26,3 +26,24 @@ npm run build    # typecheck + production build
 ```
 
 Vite + TypeScript, Dexie for IndexedDB, vitest for tests. No frameworks.
+
+## Project layout
+
+```
+index.html            entry page, mounts the CRT shell
+public/fonts/         self-hosted VT323 (no font requests at runtime)
+src/
+  main.ts             registers routes and starts the router
+  router.ts           hash router; locked routes redirect to the minigame
+  db.ts, types.ts     Dexie schema and the data interfaces
+  state.ts            in-memory session flags (booted, unlocked, instant text)
+  typewriter.ts       char-by-char text engine with skip-on-keypress
+  ui.ts               shared menu / Y/N confirm / prompt helpers
+  sound.ts            sound manager (no-op stubs for now)
+  backup.ts           holotape.json export/import
+  minigame/           pure hacking-minigame logic + word list (no DOM)
+  screens/            one module per screen; each returns a cleanup function
+tests/                vitest coverage for the minigame logic
+docs/                 planning docs and game reference screenshots
+CLAUDE.md, HANDOFF.md working agreements and session notes for AI-assisted builds
+```
