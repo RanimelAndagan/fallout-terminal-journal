@@ -34,7 +34,7 @@ Everything is stored locally in your browser (IndexedDB via Dexie). No accounts,
 - 🔐 **Authentic hacking minigame** — 16×2 board of junk and candidate words, 4 attempts, likeness feedback, and the classic `(...)` `[...]` `{...}` `<...>` bracket trick to remove duds or reset attempts
 - 📼 **Holotape storage** — your data is framed as a holotape; **eject** it to download a JSON backup, **insert** one to restore or merge on another machine
 - 📓 **Journals & entries** — create multiple journals, write entries in a terminal editor, browse and read them back
-- 🔊 **Terminal audio out of the box** — keyboard clicks, char-scroll, fan hum, and access granted/denied stingers are synthesized in code with Web Audio, so audio works on a fresh clone; drop in the original Fallout 3 wavs to upgrade to the real thing (see below)
+- 🔊 **The real terminal audio** — the original Fallout 3 keyboard clicks, char-scroll, fan hum, and access granted/denied stingers, played via Web Audio (see the sound section for the obligatory disclaimer)
 - 🔒 **Privacy by theme** — deep links never bypass the lock; a reload always drops you back at the boot screen
 - 📦 **Zero backend** — one dependency (Dexie). Everything else is vanilla TypeScript and CSS
 
@@ -88,9 +88,7 @@ On first run there's no holotape, so the terminal walks you through creating one
 
 ## 🔊 SOUND
 
-Audio works automatically: every cue has a **procedurally synthesized** retro-terminal stand-in (`src/synth.ts`) — clicks, beeps, hums, and power sweeps generated in code, no audio files needed.
-
-If you own **Fallout 3**, you can upgrade to the *real* original sound effects: extract these from your own game install and drop them into `public/sounds/`. Real files always take precedence over the synthesized versions, and that folder is gitignored so game assets are never committed:
+The app plays the **original Fallout 3 terminal sound effects** — the 16 wavs in `public/sounds/`, extracted from the game's `Fallout - Sound.bsa`:
 
 ```
 obj_computerterminal_forward.wav     boot-up
@@ -104,17 +102,9 @@ ui_pipboy_holotape_start.wav         holotape insert
 ui_pipboy_holotape_stop.wav          holotape eject
 ```
 
-### Extracting them from your game
+If a file is ever missing, that cue falls back to a **procedurally synthesized** stand-in (`src/synth.ts`) — clicks, beeps, hums, and power sweeps generated in code — so the app is never silent.
 
-All 16 files live in `Data/Fallout - Sound.bsa` inside your Fallout 3 install. With [BSA Browser](https://github.com/AlexxEG/BSA_Browser)'s `bsab.exe` CLI, one command pulls exactly those files:
-
-```
-bsab.exe -e -o --regex "ui_hacking_(charsingle|charscroll_lp|passgood|passbad|fanhum_lp)|obj_computerterminal_(forward|powerdown)|ui_pipboy_holotape" "C:\Program Files (x86)\Steam\steamapps\common\Fallout 3 goty\Data\Fallout - Sound.bsa" out
-```
-
-Then copy the 16 wavs (flat, no subfolders) into `public/sounds/`. **Fallout: New Vegas** ships the same files under the same names, so its `Fallout - Sound.bsa` works too.
-
-Note that a deploy built from a clean checkout ships only the synthesized sounds — copying the real wavs into a public build would mean redistributing Bethesda's assets, so the default setup deliberately doesn't.
+> **⚠️ Sound disclaimer:** I do not own these sound effects and claim no rights to them whatsoever. They are the property of **Bethesda Softworks / ZeniMax Media**, included here purely out of love for the games, in a non-commercial fan project. If you are the rights holder and want them gone, open an issue and they will be removed immediately.
 
 ## 🗂️ PROJECT STRUCTURE
 
@@ -124,8 +114,8 @@ src/
 ├── router.ts        hash router with lock-screen guards
 ├── db.ts            Dexie (IndexedDB) database
 ├── backup.ts        holotape eject/insert (JSON export/import)
-├── sound.ts         Web Audio manager, real wavs optional
-├── synth.ts         procedural fallback sounds, zero assets
+├── sound.ts         Web Audio manager for the terminal sounds
+├── synth.ts         procedural fallback if a wav goes missing
 ├── typewriter.ts    character-by-character text printing
 ├── minigame/
 │   ├── logic.ts     pure hacking-game logic (board gen, likeness, duds)
@@ -133,7 +123,7 @@ src/
 └── screens/         boot, setup, unlock, home, journal, editor, reader...
 tests/               Vitest suite
 public/fonts/        VT323 — the terminal font
-public/sounds/       your sound files go here (gitignored)
+public/sounds/       the Fallout 3 terminal sounds (see disclaimer)
 ```
 
 ## 🧰 TECH
@@ -149,7 +139,7 @@ Built with **TypeScript**, **Vite**, **Vitest**, and **Dexie** — no framework,
 *** TERMLINK SESSION TERMINATED ***
 ```
 
-*This is a fan project. Fallout, RobCo, Vault-Tec, and related assets belong to Bethesda Softworks. No game files are distributed with this repository.*
+*This is a non-commercial fan project. Fallout, RobCo, Vault-Tec, and related assets belong to Bethesda Softworks / ZeniMax Media. The terminal sound effects in `public/sounds/` are theirs, not mine — see the sound disclaimer above. Rights holders: ask and they're removed.*
 
 **War. War never changes. But your journal entries can.**
 

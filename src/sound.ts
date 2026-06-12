@@ -1,7 +1,7 @@
-// web audio backed by wavs extracted from the user's own fallout 3 install.
-// public/sounds is gitignored, so every file is optional: a missing one falls
-// back to a procedurally synthesized stand-in (synth.ts), which is how a
-// fresh clone gets audio without distributing any game assets.
+// web audio backed by the fallout 3 terminal wavs in public/sounds (see the
+// readme's sound disclaimer). every file is still optional: a missing one
+// falls back to a procedurally synthesized stand-in (synth.ts), so the app
+// keeps making noise even if the wavs are removed.
 
 import { synthesize } from "./synth";
 

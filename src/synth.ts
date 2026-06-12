@@ -1,7 +1,6 @@
-// procedural stand-ins for the fallout sound effects. a fresh clone has no
-// wavs (public/sounds is gitignored), so every cue falls back to one of
-// these. real files always win; these only fill the gaps, which is why the
-// keys here mirror the FILES map in sound.ts exactly.
+// procedural stand-ins for the fallout sound effects. real files always win;
+// these only fill the gaps if a wav in public/sounds fails to load, which is
+// why the keys here mirror the FILES map in sound.ts exactly.
 
 // deterministic noise so the same cue sounds identical every session
 function makeNoise(seed: number): () => number {
