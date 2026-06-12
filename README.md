@@ -42,20 +42,20 @@ Everything is stored locally in your browser (IndexedDB via Dexie). No accounts,
 
 You need [Node.js](https://nodejs.org/) (v18 or newer recommended) and npm.
 
-**1. Clone the wasteland:**
+**1.**
 
 ```bash
 git clone https://github.com/RanimelAndagan/fallout-terminal-journal.git
 cd fallout-terminal-journal
 ```
 
-**2. Scavenge the dependencies:**
+**2.**
 
 ```bash
 npm install
 ```
 
-**3. Power on the terminal:**
+**3.**
 
 ```bash
 npm run dev
