@@ -2,6 +2,7 @@ import { db, getHolotape, newId } from "../db";
 import { navigate } from "../router";
 import { session } from "../state";
 import { el, createMenu, promptInput, rule, blankLine, type MenuItem, type Menu } from "../ui";
+import { sound } from "../sound";
 import { typeSequence } from "../typewriter";
 import { osHeader } from "./header";
 import {
@@ -57,6 +58,7 @@ export async function homeScreen(root: HTMLElement): Promise<(() => void) | void
     try {
       const data = await parseHolotapeFile(file);
       await importHolotape(data, mode);
+      sound.tapeInsert();
       status.textContent = mode === "replace" ? "HOLOTAPE RESTORED." : "HOLOTAPE MERGED.";
       navigate("/home");
     } catch (err) {
@@ -90,7 +92,14 @@ export async function homeScreen(root: HTMLElement): Promise<(() => void) | void
       onSelect: () => navigate(`/journal/${j.id}`),
     })),
     { label: "Create New Journal", onSelect: () => void createJournal() },
-    { label: "Eject Holotape (Backup)", onSelect: () => void ejectHolotape().then(() => (status.textContent = "HOLOTAPE EJECTED: holotape.json")) },
+    {
+      label: "Eject Holotape (Backup)",
+      onSelect: () =>
+        void ejectHolotape().then(() => {
+          sound.tapeEject();
+          status.textContent = "HOLOTAPE EJECTED: holotape.json";
+        }),
+    },
     { label: "Insert Holotape (Restore)", onSelect: insertFlow },
     {
       label: `Instant Text: ${tape.settings.instantText ? "ON" : "OFF"}`,

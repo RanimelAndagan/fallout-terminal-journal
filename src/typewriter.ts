@@ -85,7 +85,7 @@ export function typeSequence(steps: TypeStep[], msPerChar = 14): Promise<void> {
           charIdx = 0;
         }
       }
-      if (typed) sound.keypress();
+      if (typed) sound.scroll();
       if (stepIdx >= steps.length) return finish();
       raf = requestAnimationFrame(tick);
     };

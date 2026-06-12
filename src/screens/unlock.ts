@@ -51,6 +51,8 @@ export async function unlockScreen(root: HTMLElement): Promise<(() => void) | vo
   const log: string[] = [];
   const timers: number[] = [];
 
+  sound.humStart();
+
   const wrap = el("div", "screen-pad minigame");
   root.appendChild(wrap);
 
@@ -296,6 +298,7 @@ export async function unlockScreen(root: HTMLElement): Promise<(() => void) | vo
   step(1);
 
   return () => {
+    sound.humStop();
     window.removeEventListener("keydown", onKey);
     timers.forEach((t) => clearTimeout(t));
   };

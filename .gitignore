@@ -1,3 +1,6 @@
 node_modules
 dist
 *.local
+
+# ripped from the user's own game install, never committed (see docs/sounds.md)
+public/sounds/
