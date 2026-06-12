@@ -3,7 +3,7 @@
 ```
  ██████████████████████████████████████████████████████████████████
  █                                                                █
- █   ROBCO INDUSTRIES (TM) TERMLINK PROTOCOL                      █
+ █   RanCO INDUSTRIES (TM) TERMLINK PROTOCOL                      █
  █   >>> TERMINAL JOURNAL v0.1.0                                  █
  █                                                                █
  █   COPYRIGHT 2075-2077 ROBCO INDUSTRIES                         █
@@ -12,9 +12,7 @@
  ██████████████████████████████████████████████████████████████████
 ```
 
-### ☢️ A personal journal disguised as a Fallout terminal ☢️
-
-*Boot it up. Hack your way in. Write like the bombs already dropped.*
+### ☢️ A personal journal like those Fallout terminals ☢️
 
 [![Skills](https://skillicons.dev/icons?i=ts,vite,vitest,html,css,git)](https://skillicons.dev)
 
