@@ -1,7 +1,9 @@
-// web audio backed by wavs extracted from the user's own fallout 3 install
-// (docs/sounds.md has the mapping and the extraction command). public/sounds
-// is gitignored, so every file is optional: a missing one just means that cue
-// stays silent and the app behaves exactly like the old no-op stub.
+// web audio backed by wavs extracted from the user's own fallout 3 install.
+// public/sounds is gitignored, so every file is optional: a missing one falls
+// back to a procedurally synthesized stand-in (synth.ts), which is how a
+// fresh clone gets audio without distributing any game assets.
+
+import { synthesize } from "./synth";
 
 const KEY_VARIANTS = 8;
 
@@ -45,12 +47,15 @@ class SoundManager {
   private async load(key: string, file: string): Promise<void> {
     try {
       const res = await fetch(`${import.meta.env.BASE_URL}sounds/${file}`);
-      if (!res.ok) return;
-      const data = await res.arrayBuffer();
-      this.buffers.set(key, await this.ctx!.decodeAudioData(data));
+      if (res.ok) {
+        const data = await res.arrayBuffer();
+        this.buffers.set(key, await this.ctx!.decodeAudioData(data));
+        return;
+      }
     } catch {
-      // optional file, stay silent
+      // fall through to the synthesized stand-in
     }
+    this.buffers.set(key, synthesize(key, this.ctx!));
   }
 
   private node(key: string, gain: number, loop: boolean): AudioBufferSourceNode | null {
