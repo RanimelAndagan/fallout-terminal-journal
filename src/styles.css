@@ -53,6 +53,8 @@ body {
 
 #screen {
   position: relative;
+  /* size container so the minigame can scale its fixed grid to the glass */
+  container-type: size;
   width: 100%;
   height: 100%;
   overflow: hidden;
@@ -246,7 +248,13 @@ body {
 /* ---------- minigame ---------- */
 
 .minigame {
+  /* the board is a fixed grid (2 cols of 16 rows, 12 chars + address each),
+     so scaling the font is what makes it fill the glass like the game.
+     height bound: ~25 line-heights of content. width bound: ~36em of row
+     chars plus the log column. first declaration is the fallback for
+     browsers without container query units. */
   font-size: clamp(13px, 2.1vmin, 22px);
+  font-size: min(3.5cqh, 2.7cqw);
 }
 
 .mg-header {
@@ -301,6 +309,7 @@ body {
   flex-direction: column;
   justify-content: flex-end;
   min-width: 9em;
+  flex: 1;
   overflow: hidden;
 }
 
