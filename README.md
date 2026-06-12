@@ -65,7 +65,7 @@ Vite prints a local URL (usually `http://localhost:5173`) — open it in your br
 
 **4. First boot setup:**
 
-On first run there's no holotape, so the terminal walks you through creating one: a tape label, a user name, and **ten password words**. Every time you unlock, the terminal picks *one* of your ten at random and hides it on the hacking board among look-alike duds — **you get into your journal by hacking it**, so pick words you'll recognize on a wall of junk characters.
+On first run there's no holotape, so the terminal walks you through creating one: a tape label, a user name, and **ten password words**. Every time you unlock, the terminal picks *one* of your ten at random and hides it on the hacking board among look-alike duds **you get into your journal by hacking it**, so pick words you'll recognize on a wall of junk characters.
 
 ### Other commands
 
@@ -138,6 +138,6 @@ Built with **TypeScript**, **Vite**, **Vitest**, and **Dexie** — no framework,
 
 *This is a fan project. Fallout, RobCo, Vault-Tec, and related assets belong to Bethesda Softworks. No game files are distributed with this repository.*
 
-**War. War never changes. But your journal entries can — they're editable.**
+**War. War never changes. But your journal entries can.**
 
 </div>
